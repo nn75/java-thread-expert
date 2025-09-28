@@ -2,15 +2,11 @@ package com.sm.coordinate;
 
 import java.math.BigInteger;
 
-public class ThreadTermination3 {
-    public static void main(String[] args) throws InterruptedException {
+public class ThreadIsInterrupted {
+    public static void main(String[] args) {
         Thread thread = new Thread(new LongComputation(new BigInteger("2000000"), new BigInteger("10000000000")));
 
-        // Even though the long calculation has not finished,
-        // just the fact that the main thread ended makes the entire app terminate.
-        thread.setDaemon(true);
         thread.start();
-        Thread.sleep(100);
         thread.interrupt();
     }
 
@@ -32,6 +28,10 @@ public class ThreadTermination3 {
             BigInteger result = BigInteger.ONE;
 
             for(BigInteger i = BigInteger.ZERO; i.compareTo(power) != 0 ; i = i.add(BigInteger.ONE)) {
+                if (Thread.currentThread().isInterrupted()) {
+                    System.out.println("Prematurely interrupted computation");
+                    return BigInteger.ZERO;
+                }
                 result = result.multiply(base);
             }
 
