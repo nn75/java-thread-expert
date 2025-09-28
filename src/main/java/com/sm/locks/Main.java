@@ -23,7 +23,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 
-/*
+/**
+ * ReentrantLock Demo, tryLock()
  * 运行配置JVM options: --module-path /Users/nn75/.m2/repository/org/openjfx/javafx-controls/11.0.2:/Users/nn75/.m2/repository/org/openjfx/javafx-fxml/11.0.2:/Users/nn75/.m2/repository/org/openjfx/javafx-graphics/11.0.2:/Users/nn75/.m2/repository/org/openjfx/javafx-base/11.0.2 --add-modules javafx.controls,javafx.fxml
  */
 public class Main extends Application {

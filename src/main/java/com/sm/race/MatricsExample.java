@@ -1,4 +1,4 @@
-package com.sm.sharing;
+package com.sm.race;
 
 import java.util.Random;
 

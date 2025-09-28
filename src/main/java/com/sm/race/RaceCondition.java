@@ -1,4 +1,4 @@
-package com.sm.sharing;
+package com.sm.race;
 
 public class RaceCondition {
     public static void main(String[] args) throws InterruptedException {

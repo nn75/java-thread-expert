@@ -1,4 +1,4 @@
-package com.sm.sharing;
+package com.sm.race;
 
 public class DataRaces {
     public static void main(String[] args) {

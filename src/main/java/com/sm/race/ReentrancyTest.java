@@ -1,4 +1,4 @@
-package com.sm.sharing;
+package com.sm.race;
 
 public class ReentrancyTest {
     private final Object lock = new Object();
