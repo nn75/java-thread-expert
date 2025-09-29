@@ -9,14 +9,12 @@ import java.util.StringJoiner;
 
 
 /**
- * 由于生产者比消费者快
+ * 由于生产者比消费者快，会看到queue先变大后变小
  */
 public class MainApplication {
     private static final String INPUT_FILE = "src/main/resources/matrices/input";
     private static final String OUTPUT_FILE = "src/main/resources/matrices/output.txt";
-
     private static final int N = 10;
-
 
     public static void main(String[] args) throws IOException {
         ThreadSafeQueue threadSafeQueue = new ThreadSafeQueue();
@@ -45,6 +43,7 @@ public class MainApplication {
                 float[][] matrix1 = readMatrix();
                 float[][] matrix2 = readMatrix();
                 if (matrix1 == null || matrix2 == null) {
+                    System.out.println("=== PRODUCER: About to terminate ===");
                     queue.terminate();
                     System.out.println("No more matrices to read. Producer Thread is terminating");
                     return;
@@ -139,14 +138,22 @@ public class MainApplication {
         private boolean isTerminate = false;
         // isTerminate: signal the consumer that the producer has nothing more to offer,
         // and the consumer needs to terminate its thread
+        private static final int CAPACITY = 5;
 
         public synchronized void add(MatricesPair matricesPair) {
+            while (queue.size() == CAPACITY) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                }
+            }
             queue.add(matricesPair);
             isEmpty = false;
             notify();
         }
 
         public synchronized MatricesPair remove() {
+            MatricesPair matricesPair = null;
             while (isEmpty && !isTerminate) {
                 try {
                     wait();
@@ -165,7 +172,12 @@ public class MainApplication {
 
             System.out.println("queue size " + queue.size());
 
-            return queue.remove();
+            matricesPair = queue.remove();
+            if (queue.size() == CAPACITY - 1) {
+                notifyAll(); // wake up producer
+            }
+
+            return matricesPair;
         }
 
         // once queue becomes empty, the consumer should terminate its thread

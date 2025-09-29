@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.StringJoiner;
 
+
+/**
+ * 用于生成 matrices，供 com.sm.condition.MainApplication 使用
+ */
 public class MatricsGenerator {
     private static final String OUTPUT_FILE = "src/main/resources/matrices/input";
     private static final int N = 10;
