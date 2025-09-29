@@ -78,3 +78,7 @@ nb-configuration.xml
 ## Miscellaneous
 ##############################
 *.log
+
+
+
+src/main/resources/matrices/
