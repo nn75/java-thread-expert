@@ -9,7 +9,9 @@ import java.util.StringJoiner;
 
 
 /**
+ * 前置操作：用 {@link com.sm.condition.MatricsGenerator} 生成 src/main/resources/matrices/input
  * 由于生产者比消费者快，会看到queue先变大后变小
+ * 如果加上backpressure，会看到queue的大小最大就是 {@link com.sm.condition.MainApplication.ThreadSafeQueue#CAPACITY}
  */
 public class MainApplication {
     private static final String INPUT_FILE = "src/main/resources/matrices/input";
@@ -141,12 +143,14 @@ public class MainApplication {
         private static final int CAPACITY = 5;
 
         public synchronized void add(MatricesPair matricesPair) {
+            // backpressure
             while (queue.size() == CAPACITY) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
                 }
             }
+
             queue.add(matricesPair);
             isEmpty = false;
             notify();
@@ -174,7 +178,7 @@ public class MainApplication {
 
             matricesPair = queue.remove();
             if (queue.size() == CAPACITY - 1) {
-                notifyAll(); // wake up producer
+                notifyAll(); // backpressure: wake up producer
             }
 
             return matricesPair;
