@@ -1,18 +1,15 @@
-package com.sm.io.bound;
+package com.sm.virtual;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
 /**
- * Price of Context Switch：
- * CPU核心: [Thread-1] → [Thread-2] → [Thread-3] → ... → [Thread-1000] → [Thread-1] → ...
- *          ↑           ↑           ↑                   ↑               ↑
- *        每个线程     每个线程     每个线程             循环回到        无限循环
- *        执行一会儿   执行一会儿   执行一会儿           第一个线程       切换！
+ * Virtual Thread 解决了 Context Switch is expensive 的问题，
+ * Virtual Thread 的 mount 和 unmount 开销比传统 thread context switch 的开销小。
+ * 对照组：{@link com.sm.io.bound.IoBoundApplicationV2}
  */
-
-public class IoBoundApplicationV2 {
+public class IoBoundApplicationV2WithVirtualThread {
     private static final int NUMBER_OF_TASKS = 10_000;
 
     public static void main(String[] args) {
@@ -21,11 +18,11 @@ public class IoBoundApplicationV2 {
         long start = System.currentTimeMillis();
         performTasks();
         System.out.printf("Tasks took %dms to complete\n", System.currentTimeMillis() - start);
-        // Tasks took 23445ms to complete
+        // Tasks took 8166ms to complete
     }
 
     private static void performTasks() {
-        try (ExecutorService executorService = Executors.newFixedThreadPool(1000)) {
+        try (ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor()) {
 
             for (int i = 0; i < NUMBER_OF_TASKS; i++) {
                 executorService.submit(new Runnable() {

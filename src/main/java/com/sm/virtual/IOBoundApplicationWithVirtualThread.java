@@ -1,15 +1,15 @@
-package com.sm.io.bound;
+package com.sm.virtual;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 /**
- * Too many threads - Our application will crash
+ * Virtual Thread 解决了因为 thread 太多，application crash 的问题
+ * 对照组：{@link com.sm.io.bound.IOBoundApplication}
  */
-public class IOBoundApplication {
+public class IOBoundApplicationWithVirtualThread {
     private static final int NUMBER_OF_TASKS = 10_000;
-    // 如果数量太大，比如10_000，会出现crash:
-    // Exception in thread "main" java.lang.OutOfMemoryError: unable to create native thread: possibly out of memory or process/resource limits reached
 
     public static void main(String[] args) {
         System.out.printf("Running %d tasks\n", NUMBER_OF_TASKS);
@@ -20,17 +20,10 @@ public class IOBoundApplication {
     }
 
     private static void performTasks() {
-        ExecutorService executorService = Executors.newCachedThreadPool();
-        // dynamic pool, cache those threads to be reused in the future
-        // we should expect that this thread pool will grow to about 1000 threads.
-
-        for (int i = 0; i < NUMBER_OF_TASKS; i++) {
-            executorService.submit(new Runnable() {
-                @Override
-                public void run() {
-                    blockingIoOperation();
-                }
-            });
+        try(ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();) {
+            for (int i = 0; i < NUMBER_OF_TASKS; i++) {
+                executorService.submit(()-> blockingIoOperation());
+            }
         }
     }
 
